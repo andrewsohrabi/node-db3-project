@@ -157,13 +157,22 @@ async function add(scheme) { // EXERCISE D
   return findById(scheme_id);
 }
 
-function addStep(scheme_id, step) { // EXERCISE E
+async function addStep(scheme_id, step) { // EXERCISE E
   /*
     1E- This function adds a step to the scheme with the given `scheme_id`
     and resolves to _all the steps_ belonging to the given `scheme_id`,
     including the newly created one.
   */
- 
+ // adding a step is equivalent to updating a scheme via insert
+  return db('steps as st')
+    .insert(step, scheme_id)
+    .then(([scheme_id]) => findSteps(scheme_id)) // gives you steps for a scheme
+    // Question: need clarification on this, having trouble testing in Postman if this worked
+    .then (() => {
+      return db('steps as st')
+      .where('scheme_id', scheme_id)
+      .orderBy('st.step_number', 'asc')
+    })
 }
 
 module.exports = {
