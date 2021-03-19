@@ -1,5 +1,5 @@
 const db = require('../../data/db-config')
-const { leftJoin } = require('../../data/db-config');
+//const { leftJoin } = require('../../data/db-config');
 
 function find() { // EXERCISE A
   /*
@@ -19,14 +19,37 @@ function find() { // EXERCISE A
     Return from this function the resulting dataset.
   */
     return db('schemes as sc')
-    .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
-    .select('sc.*')
-    .count('st.step_id as number_of_steps')
-    .groupBy('sc.scheme_id')
-    .orderBy('sc.scheme_id', 'asc');
+      .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
+      .select('sc.*')
+      .count('st.step_id as number_of_steps')
+      .groupBy('sc.scheme_id')
+      .orderBy('sc.scheme_id', 'asc');
 }
 
-function findById(scheme_id) { // EXERCISE B
+async function findById(scheme_id) { // EXERCISE B 
+  
+  const data = await db.select('scheme_name', 'steps.*')
+  .from('schemes')
+  .leftJoin('steps', 'schemes.scheme_id', 'steps.scheme_id') 
+  .where('schemes.scheme_id', scheme_id)
+  .orderBy('steps.step_number', 'asc');
+  // joins schemes with steps based on scheme_id
+
+  // populates a scheme object based on the data from the select
+  const schemeObject = {
+    scheme_id: data[0].scheme_id,
+    scheme_name: data[0].scheme_name,
+    steps: data.map(step => {
+      return {
+        step_id: step.step_id,
+        step_number: step.step_number,
+        instructions: step.instructions
+      }
+    })
+  }
+
+  return schemeObject;
+    
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -92,6 +115,8 @@ function findById(scheme_id) { // EXERCISE B
         "steps": []
       }
   */
+  
+
 }
 
 function findSteps(scheme_id) { // EXERCISE C

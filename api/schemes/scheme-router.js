@@ -2,7 +2,6 @@
 const express = require('express')
 const { checkSchemeId, validateScheme, validateStep } = require('./scheme-middleware')
 const Schemes = require('./scheme-model.js')
-
 const router = express.Router()
 
 /**
@@ -52,7 +51,7 @@ router.get('/', (req, res, next) => {
     ]
   }
 */
-router.get('/:scheme_id', checkSchemeId, (req, res, next) => {
+router.get('/:scheme_id',checkSchemeId, (req, res, next) => { // add back in checkSchemeId
   const { scheme_id } = req.params
 
   Schemes.findById(scheme_id)
